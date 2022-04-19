@@ -1,30 +1,57 @@
 <script>
-	export let name;
+	import { flip } from "svelte/animate";
+	import homoit from "./homoit.js";
+	import { fade } from "svelte/transition";
+	import { my_store } from "./stores.js";
+	let items = [1, 2, 3];
+	function shuffle() {
+		items = items.sort(() => Math.random() - 0.5);
+	}
+	function add() {
+		if (Number.isNaN(new_number)) {
+			items = [new_number, ...items];
+			new_number = undefined;
+		} else {
+			new_number = undefined;
+		}
+	}
+	let new_number;
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	<button on:click={shuffle}>Shuffle</button>
+	<input
+		type="number"
+		bind:value={new_number}
+		on:keydown={(e) => {
+			if (e.key === "Enter") {
+				add();
+			}
+		}}
+	/>
+	<button on:click={add}>Add</button>
+	<div class="container">
+		{#each items as item (item)}
+			<div
+				animate:flip={{ duration: 300 }}
+				transition:fade={{ duration: 300 }}
+				class="number"
+			>
+				<h1>{homoit(item)}={item}</h1>
+			</div>
+		{/each}
+	</div>
+	<h2>{$my_store}</h2>
 </main>
 
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
+	.container {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
 	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
+	.number {
+		margin: 10px;
 	}
 </style>
